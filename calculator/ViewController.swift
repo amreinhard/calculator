@@ -24,16 +24,16 @@ class ViewController: UIViewController {
     }
 
     @IBAction func pressedNumber(_ sender: Any) {
-        if let numberButton = sender as? UIButton {
-            if lastOperation != .none {
-                let number = Int(display.text!)
-                lastValue = number!
-                display.text = "0"
+        if let numberButton = sender as? UIButton, let numberTitle = numberButton.titleLabel?.text, let displayText = display.text {
+            if lastOperation != .none, let number = Int(displayText) {
+                lastValue = number
+//                display.text = "0"
+                display.text = numberTitle
             }
             if display.text == "0" {
-                display.text = numberButton.titleLabel!.text!
+                display.text = numberTitle
             } else {
-                display.text! += numberButton.titleLabel!.text!
+                display.text = displayText + numberTitle
             }
         }
     }
@@ -47,20 +47,22 @@ class ViewController: UIViewController {
         if display.text!.count == 1 {
             display.text = "0"
         } else {
-            display.text = String(display.text!.dropLast())
+            if let displayText = display.text?.dropLast() {
+                display.text = String(displayText)
+            }
         }
     }
     @IBAction func pressedOperation(_ sender: Any) {
-        if let opButton = sender as? UIButton, let op = CalcOperation(rawValue: opButton.titleLabel!.text!) {
+        if let opButton = sender as? UIButton, let opText = opButton.titleLabel?.text,
+            let op = CalcOperation(rawValue: opText), let displayText = display.text, let number = Int(displayText) {
             var result = 0
             if op == .equal{
-                let number = Int(display.text!)
                 switch lastOperation {
-                    case .add: result = lastValue + number!
-                    case .subtract: result = lastValue - number!
-                    case .multiply: result = lastValue * number!
-                    case .divide: result = lastValue / number!
-                    case .modulo: result = lastValue % number!
+                    case .add: result = lastValue + number
+                    case .subtract: result = lastValue - number
+                    case .multiply: result = lastValue * number
+                    case .divide: result = lastValue / number
+                    case .modulo: result = lastValue % number
                     default: break
                 }
                 display.text = String(result)
