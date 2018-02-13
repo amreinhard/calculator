@@ -30,22 +30,40 @@ class ViewController: UIViewController {
                 lastValue = number!
                 display.text = "0"
             }
-            display.text! += numberButton.titleLabel!.text!
+            if display.text == "0" {
+                display.text = numberButton.titleLabel!.text!
+            } else {
+                display.text! += numberButton.titleLabel!.text!
+            }
         }
     }
     
+    @IBAction func allClear(_ sender: Any) {
+        lastOperation = .none
+        display.text = "0"
+        lastValue = 0
+    }
     @IBAction func pressedDelete(_ sender: Any) {
-        display.text = String(display.text!.dropLast())
+        if display.text!.count == 1 {
+            display.text = "0"
+        } else {
+            display.text = String(display.text!.dropLast())
+        }
     }
     @IBAction func pressedOperation(_ sender: Any) {
         if let opButton = sender as? UIButton, let op = CalcOperation(rawValue: opButton.titleLabel!.text!) {
+            var result = 0
             if op == .equal{
+                let number = Int(display.text!)
                 switch lastOperation {
-                    case .add:
-                    let number = Int(display.text!)
-                    display.text = String(lastValue + number!)
-                default: break
+                    case .add: result = lastValue + number!
+                    case .subtract: result = lastValue - number!
+                    case .multiply: result = lastValue * number!
+                    case .divide: result = lastValue / number!
+                    case .modulo: result = lastValue % number!
+                    default: break
                 }
+                display.text = String(result)
             }
             lastOperation = op
         }
